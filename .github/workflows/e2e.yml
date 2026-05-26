@@ -1,0 +1,23 @@
+name: E2E
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  playwright:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then npm ci; fi
+      - name: Install Playwright
+        run: |
+          if [ -f package.json ]; then npx playwright install --with-deps; fi
+      - name: Run E2E tests
+        run: |
+          if [ -f package.json ] && npm run | grep -q "e2e"; then npm run e2e; else echo "No e2e script configured"; fi
